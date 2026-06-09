@@ -1,8 +1,3 @@
-"""
-Ödev 10 – Multi-Threaded Web Scraper & Link Raporlayıcı (Python)
-Kullanılan kütüphaneler: aiohttp, asyncio, re, csv, time
-Kurulum: pip install aiohttp
-"""
 
 import asyncio
 import aiohttp
@@ -13,7 +8,7 @@ import time
 URLS_FILE = "urls.txt"
 OUTPUT_FILE = "scraped_results.csv"
 
-# ─── urls.txt içeriği (yoksa otomatik oluştur) ────────────────────────────────
+
 SAMPLE_URLS = [
     "https://www.python.org",
     "https://www.github.com",
@@ -42,7 +37,7 @@ async def read_urls() -> list[str]:
     return await loop.run_in_executor(None, _read)
 
 async def fetch_site(session: aiohttp.ClientSession, url: str) -> dict:
-    """Tek bir siteyi asenkron olarak tara, link sayısını ve yanıt süresini döndür."""
+   
     start = time.perf_counter()
     status = "ERROR"
     link_count = 0
@@ -53,7 +48,7 @@ async def fetch_site(session: aiohttp.ClientSession, url: str) -> dict:
                                ssl=False) as resp:
             status = str(resp.status)
             html = await resp.text(errors="replace")
-            # href içeren tüm linkleri bul
+            
             links = re.findall(r'href=["\']?(https?://[^"\'> ]+)', html)
             link_count = len(links)
     except Exception as e:
@@ -70,7 +65,7 @@ async def fetch_site(session: aiohttp.ClientSession, url: str) -> dict:
     }
 
 async def scrape_all(urls: list[str]) -> list[dict]:
-    """Tüm sitelere aynı anda istek at (paralel)."""
+   
     connector = aiohttp.TCPConnector(limit=20)
     async with aiohttp.ClientSession(connector=connector) as session:
         tasks = [fetch_site(session, url) for url in urls]
@@ -89,12 +84,12 @@ def write_csv(results: list[dict]):
 async def main():
     print("=== Ödev 10: Async Web Scraper ===\n")
 
-    # urls.txt yoksa oluştur
+    
     import os
     if not os.path.exists(URLS_FILE):
         create_urls_file()
 
-    # Asenkron URL okuma
+   
     urls = await read_urls()
     print(f"[INFO] {len(urls)} URL okundu. Tarama başlıyor...\n")
 
