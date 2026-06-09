@@ -12,7 +12,7 @@ public record ScrapeResult(
     string Url,
     string Status,
     int    LinkCount,
-    double ResponseTime   // saniye
+    double ResponseTime   
 );
 
 // ─── SCRAPER ──────────────────────────────────────────────────────────────────
@@ -35,7 +35,7 @@ public class WebScraper
             status = ((int)response.StatusCode).ToString();
             string html = await response.Content.ReadAsStringAsync();
 
-            // href="https://..." linklerini say
+           
             var matches  = Regex.Matches(html,
                 @"href=[""']?(https?://[^""'> ]+)", RegexOptions.IgnoreCase);
             linkCount = matches.Count;
@@ -74,7 +74,7 @@ public static class CsvWriter
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 class Program
 {
-    // Demo URL listesi — gerçekte urls.txt'den okunur
+    
     static readonly string[] SampleUrls =
     [
         "https://www.python.org",
@@ -96,21 +96,21 @@ class Program
         const string urlsFile   = "urls.txt";
         const string outputFile = "scraped_results.csv";
 
-        // urls.txt yoksa oluştur
+       
         if (!File.Exists(urlsFile))
         {
             await File.WriteAllLinesAsync(urlsFile, SampleUrls);
             Console.WriteLine($"[INFO] {urlsFile} oluşturuldu.");
         }
 
-        // Asenkron URL okuma
+        
         string[] urls = await File.ReadAllLinesAsync(urlsFile);
         Console.WriteLine($"[INFO] {urls.Length} URL okundu. Tarama başlıyor...\n");
 
         var scraper = new WebScraper();
         var sw      = Stopwatch.StartNew();
 
-        // Tüm sitelere aynı anda istek at (Task.WhenAll = paralel)
+        
         var tasks   = Array.ConvertAll(urls, url => scraper.FetchAsync(url));
         var results = await Task.WhenAll(tasks);
 
